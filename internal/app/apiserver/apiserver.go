@@ -12,13 +12,7 @@ type APIServer struct {
 	repository *repository.StatRepository
 }
 
-func New(config *Config) (*APIServer, error) {
-
-	repo, err := repository.New(config.DatabaseURL)
-
-	if err != nil {
-		return nil, err
-	}
+func New(config *Config, repo *repository.StatRepository) (*APIServer, error) {
 
 	return &APIServer{
 		config:     config,
@@ -32,6 +26,7 @@ func (s *APIServer) Start() error {
 
 	s.router.HandleFunc("/stats", s.getStats).Methods("GET")
 	s.router.HandleFunc("/stats", s.addStats).Methods("POST")
+	s.router.HandleFunc("/stats", s.delStats).Methods("DELETE")
 	e := http.ListenAndServe(s.config.BindAddr, s.router)
 	if e != nil {
 		return e
