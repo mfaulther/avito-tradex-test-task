@@ -7,7 +7,7 @@ import (
 )
 
 type Statistics struct {
-	Time   string
+	Date   string
 	Views  int
 	Clicks int
 	Cost   float32
@@ -18,7 +18,7 @@ type Statistics struct {
 func (s Statistics) Validate() error {
 
 	return validation.ValidateStruct(&s,
-		validation.Field(&s.Time, validation.Required, validation.Date("2006-01-02").Error("must be in format YYYY-MM-DD")),
+		validation.Field(&s.Date, validation.Required, validation.Date("2006-01-02").Error("must be in format YYYY-MM-DD")),
 		validation.Field(&s.Cost, validation.By(checkRuble)),
 	)
 

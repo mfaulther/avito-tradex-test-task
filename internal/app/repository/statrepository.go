@@ -27,13 +27,11 @@ func New(config Config) (*StatRepository, error) {
 
 	dot, err := dotsql.LoadFromFile("./create-tables.sql")
 
-	res, err := dot.Exec(db, "create-statistics-table")
+	_, err = dot.Exec(db, "create-statistics-table")
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println(res)
 
 	return &StatRepository{
 		db: db,
@@ -59,11 +57,11 @@ func (r *StatRepository) GetStatistics(from string, to string, s string) []model
 
 	for rows.Next() {
 		var stat model.Statistics
-		err := rows.Scan(&stat.Time, &stat.Views, &stat.Clicks, &stat.Cost, &stat.Cpc, &stat.Cpm)
+		err := rows.Scan(&stat.Date, &stat.Views, &stat.Clicks, &stat.Cost, &stat.Cpc, &stat.Cpm)
 		if err != nil {
 			log.Fatal(err)
 		}
-		stat.Time = stat.Time[:10]
+		stat.Date = stat.Date[:10]
 		if stat.Clicks > 0 {
 			stat.Cpc = stat.Cost / float32(stat.Clicks)
 		}
@@ -95,7 +93,7 @@ func (r *StatRepository) AddStatistics(stat *model.Statistics) {
 		log.Fatal(err)
 	}
 
-	_, err = stmt.Exec(stat.Time, stat.Views, stat.Clicks, stat.Cost, stat.Cpc, stat.Cpm)
+	_, err = stmt.Exec(stat.Date, stat.Views, stat.Clicks, stat.Cost, stat.Cpc, stat.Cpm)
 
 	if err != nil {
 		log.Fatal(err)
@@ -123,7 +121,7 @@ func (r *StatRepository) AddStatistics(newStat *model.Statistics) {
 	//Смотрим есть ли в таблице строка с данной датой
 
 	var isExisted int
-	row := r.db.QueryRow("SELECT 1 FROM statistics WHERE stat_date=$1", newStat.Time)
+	row := r.db.QueryRow("SELECT 1 FROM statistics WHERE stat_date=$1", newStat.Date)
 	row.Scan(&isExisted)
 
 	//Если есть, то делаем UPDATE, иначе INSERT
@@ -132,8 +130,8 @@ func (r *StatRepository) AddStatistics(newStat *model.Statistics) {
 
 		var oldStat model.Statistics
 
-		oldRow := r.db.QueryRow("SELECT * FROM statistics WHERE stat_date=$1", newStat.Time)
-		oldRow.Scan(&oldStat.Time, &oldStat.Views, &oldStat.Clicks, &oldStat.Cost, &oldStat.Cpc, &oldStat.Cpm)
+		oldRow := r.db.QueryRow("SELECT * FROM statistics WHERE stat_date=$1", newStat.Date)
+		oldRow.Scan(&oldStat.Date, &oldStat.Views, &oldStat.Clicks, &oldStat.Cost, &oldStat.Cpc, &oldStat.Cpm)
 
 		newStat.Views += oldStat.Views
 		newStat.Clicks += oldStat.Clicks
@@ -145,13 +143,13 @@ func (r *StatRepository) AddStatistics(newStat *model.Statistics) {
 			newStat.Cpm = newStat.Cost / (float32(newStat.Views) * 1000)
 		}
 
-		_, err := updStmt.Exec(newStat.Views, newStat.Clicks, newStat.Cost, newStat.Cpc, newStat.Cpm, newStat.Time)
+		_, err := updStmt.Exec(newStat.Views, newStat.Clicks, newStat.Cost, newStat.Cpc, newStat.Cpm, newStat.Date)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 	} else {
-		_, err = insStmt.Exec(newStat.Time, newStat.Views, newStat.Clicks, newStat.Cost, newStat.Cpc, newStat.Cpm)
+		_, err = insStmt.Exec(newStat.Date, newStat.Views, newStat.Clicks, newStat.Cost, newStat.Cpc, newStat.Cpm)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -27,7 +27,10 @@ func (s *APIServer) getStats(w http.ResponseWriter, r *http.Request) {
 
 	res := s.repository.GetStatistics(from, to, sort)
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(res)
+
+	resp := map[string]interface{}{"data": res}
+
+	json.NewEncoder(w).Encode(&resp)
 
 }
 
@@ -52,7 +55,7 @@ func (s *APIServer) addStats(w http.ResponseWriter, r *http.Request) {
 	s.repository.AddStatistics(&newStats)
 
 	w.WriteHeader(201)
-	resp := map[string]interface{}{"status": 201, "answer": "statistics successfully added !"}
+	resp := map[string]interface{}{"status": 201, "answer": "statistics has been successfully added !"}
 
 	json.NewEncoder(w).Encode(&resp)
 

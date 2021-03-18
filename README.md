@@ -11,15 +11,22 @@
 
 ## <a name="before-launch"> </a> Перед запуском    
 
-Если будете запускать вручную, без `docker-compose`, то нужно запустить PostgreSQL и указать переменные окружения в файле `.env`
+Если запускать вручную, без `docker-compose`, то нужно запустить PostgreSQL и указать переменные окружения в файле `.env`
 
 
 ## <a name="launch-app"> </a> Как запустить
+
+* С помощью docker-compose
+
+```
+docker-compose up
+```
 
 * С помощью Go
 
 ```
 go build ./cmd/main.go
+
 ./main
 ```
 Или
@@ -27,11 +34,6 @@ go build ./cmd/main.go
 go run ./cmd/main.go
 ```
 
-* С помощью docker-compose
-
-```
-docker-compose up
-```
 
 ## <a name="handlers"> </a> Реализованные обработчики REST API
 ### <a name="post-stat"> </a> 1. POST /stats

@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/mfaulther/avito-tradex-test-task/internal/app/repository"
 	"net/http"
@@ -27,6 +28,7 @@ func (s *APIServer) Start() error {
 	s.router.HandleFunc("/stats", s.getStats).Methods("GET")
 	s.router.HandleFunc("/stats", s.addStats).Methods("POST")
 	s.router.HandleFunc("/stats", s.delStats).Methods("DELETE")
+	fmt.Println("Start server")
 	e := http.ListenAndServe(s.config.BindAddr, s.router)
 	if e != nil {
 		return e
